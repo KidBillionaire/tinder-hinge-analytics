@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="bluffRoyaleApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluff Royale - Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+    .favorite-btn {
+    background-color: transparent;
+    border: none;
+    color: #FE3C72;
+    cursor: pointer;
+    font-size: 1.2em;
+}
+.favorite-btn.active {
+    color: gold;
+}
+.chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+        body {
+            font-family: 'Roboto', sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #FE3C72;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #FE3C72;
+            color: white;
+        }
+        .form-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-container label, .form-container input, .form-container button {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+        }
+        .form-container input, .form-container textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-container button {
+            background-color: #FE3C72;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .form-container button:hover {
+            background-color: #E33962;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .glow-on-hover {
+            transition: box-shadow 0.5s;
+            cursor: pointer;
+        }
+        .glow-on-hover:hover {
+            box-shadow: 0 0 8px 0 rgba(254, 60, 114, 0.8);
+        }
+        .selected-row {
+            background-color: #ffe0e0; /* Light red background for selected rows */
+        }
+        .header {
+            background-color: #FE3C72; /* Tinder-like red */
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            margin-bottom: 10px;
+        }
+        .nav-link {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #ffd1d1; /* Lighter shade for hover */
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container-fluid header">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center">Bluff Royale - Dating Analytics</h1>
+                <nav class="nav justify-content-center">
+                    <a class="nav-link active" href="#">Home</a>
+                    <a class="nav-link" href="#">Profiles</a>
+                    <a class="nav-link" href="#">Analytics</a>
+                    <a class="nav-link" href="#">Settings</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4"></div>
+    <h2 class="text-center">Favorite Profiles</h2>
+    <div class="table-responsive">
+        <table id="favoritesTable" class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Job</th>
+                    <th>Interests</th>
+                    <th>Ethnicity</th>
+                    <th>Looking For</th>
+                    <th>Conversation Summary</th>
+                    <th>Next Step Suggestions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Favorite profiles will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Dating Analytics Manager</h1>
+        
+        <input type="file" id="csvFileInput" class="form-control mb-3" accept=".csv" onchange="loadCSV(event)">
+
+        <div class="table-responsive">
+            <table id="analyticsTable" class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Job</th>
+                        <th>Interests</th>
+                        <th>Ethnicity</th>
+                        <th>Looking For</th>
+                        <th>Conversation Summary</th>
+                        <th>Next Step Suggestions</th>
+                        <th>Actions</th>
+                        <td>
+    <button class="favorite-btn" onclick="toggleFavorite(this)">
+        <i class="fas fa-star"></i>
+    </button>
+    <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+</td>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <td>
+            <button class="favorite-btn" onclick="toggleFavorite(this)">
+                <i class="fas fa-star"></i>
+            </button>
+            <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+        </td>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Add New Entry</h2>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="Enter name">
+                </div>
+                <div class="mb-3">
+                    <label for="profilePhoto" class="form-label">Profile Photo</label>
+                    <input type="file" id="profilePhoto" class="form-control" accept="image/*">
+                </div>
+                <!-- Repeat for other fields -->
+                <button onclick="addEntry()" class="btn btn-success">Add Entry</button>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <label for="rawDataInput" class="form-label">Paste Bulk Data (unformatted)</label>
+            <textarea id="rawDataInput" class="form-control mb-3" placeholder="Paste data here, each field separated by commas, each entry on a new line."></textarea>
+            <button onclick="parseRawData()" class="btn btn-primary">Parse Bulk Data</button>
+        </div>
+
+        <div class="mt-4">
+            <h2 class="text-center">Graphical Insights</h2>
+            <div class="chart-container">
+                <canvas id="weeklyMatchesChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="lookingForChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="interestLevelChart"></canvas>
+            </div>
+        </div>
+        <div class="mt-4">
+            <h2 class="text-center">Analytics Dashboard</h2>
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Last Week Matches</th>
+                        <th>All Time Matches</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="lastWeekMatches">0</td>
+                        <td id="allTimeMatches">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <h2 class="text-center">Matches Not Messaged</h2>
+            <div class="table-responsive">
+                <table id="unmessagedTable" class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Last Interaction</th>
+                            <th>Location</th>
+                            <th>Interest Level</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows for unmessaged matches will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Existing tables and forms -->
+            </div>
+            <div class="col-md-4">
+                <h2 class="text-center">Tinder Interface</h2>
+                <button onclick="window.open('https://tinder.com', '_blank');" class="btn btn-primary">Open Tinder</button>
+            </div>
+        </div>
+
+        <button id="captureBtn" class="btn btn-warning">Capture Screen</button>
+    </div>
+
+    <script>
+        function addEntry() {
+            // Get values from form
+            const name = document.getElementById('name').value;
+            const initialMessage = document.getElementById('initialMessage').value;
+            const lastInteraction = document.getElementById('lastInteraction').value;
+            const location = document.getElementById('location').value;
+            const interestLevel = document.getElementById('interestLevel').value;
+            const notes = document.getElementById('notes').value;
+            const profilePhoto = document.getElementById('profilePhoto').files[0];
+
+            // Create a new row
+            const tableBody = document.getElementById('tableBody');
+            const row = document.createElement('tr');
+
+            // Handle profile photo display
+            const photoCell = document.createElement('td');
+            if (profilePhoto) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '50px'; // Set the image size
+                    img.style.height = '50px';
+                    photoCell.appendChild(img);
+                };
+                reader.readAsDataURL(profilePhoto);
+            } else {
+                photoCell.textContent = 'No photo';
+            }
+            row.appendChild(photoCell);
+
+            // Create editable cells
+            const editableFields = [name, initialMessage, lastInteraction, location, interestLevel, notes];
+            editableFields.forEach(field => {
+                const cell = document.createElement('td');
+                cell.textContent = field;
+                cell.setAttribute('contenteditable', 'true'); // Make the cell editable
+                row.appendChild(cell);
+            });
+
+            // Actions cell with delete button
+            const actionCell = document.createElement('td');
+            actionCell.innerHTML = '<button onclick="deleteRow(this)" class="btn btn-danger">Delete</button>';
+            row.appendChild(actionCell);
+
+            // Append the row to the table
+            tableBody.appendChild(row);
+
+            // Clear the form
+            document.getElementById('name').value = '';
+            document.getElementById('initialMessage').value = '';
+            document.getElementById('lastInteraction').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('interestLevel').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('profilePhoto').value = ''; // Clear the file input
+
+            updateAnalytics(); // Update analytics after adding an entry
+            updateUnmessagedMatches(); // Update unmessaged matches after adding an entry
+        }
+
+        function deleteRow(button) {
+            // Remove the row
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+
+            updateAnalytics(); // Update analytics after deleting an entry
+            updateUnmessagedMatches(); // Update unmessaged matches after deleting an entry
+        }
+
+        function loadCSV(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    parseCSV(text);
+                };
+                reader.readAsText(file);
+            }
+            updateUnmessagedMatches(); // Update unmessaged matches after loading CSV
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                if (index > 0 && line) { // Skip header line
+                    const columns = line.split(','); // Adjusted for comma-separated values
+                    if (columns.length >= 7) {
+                        addEntryFromCSV(columns[0], columns[1], columns[2], columns[3], columns[4], columns[5], columns[6]);
+                    }
+                }
+            });
+        }
+
+        function addEntryFromCSV(name, initialMessage, lastInteraction, location, interestLevel, dateMeetup, notes) {
+            const tableBody = document.getElementById('tableBody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${initialMessage}</td>
+                <td>${lastInteraction}</td>
+                <td>${location}</td>
+                <td>${interestLevel}</td>
+                <td>${notes}</td>
+                <td><button onclick="deleteRow(this)">Delete</button></td>
+                <td><button onclick="addToCalendar('${name}', '${lastInteraction}', '${location}')">Add to Calendar</button></td>
+            `;
+            tableBody.appendChild(row);
+
+            updateAnalytics(); // Update analytics after adding entries from CSV
+        }
+
+        function parseRawData() {
+            const rawData = document.getElementById('rawDataInput').value;
+            const lines = rawData.split('\n');
+            lines.forEach(line => {
+                if (line.trim() !== '') {
+                    const columns = line.split(',').map(item => item.trim()); // Split by comma and trim spaces
+                    if (columns.length >= 7) {
+                        addEntryFromCSV(columns[0], columns[1], columns[2], columns[3], columns[4], columns[5], columns[6]);
+                    }
+                }
+            });
+            updateUnmessagedMatches(); // Update unmessaged matches after parsing raw data
+        }
+
+        function updateEngagementMetrics() {
+    const totalMatches = matchData.interestLevels.length; // Assuming each interest level is a match
+    const repliedMatches = matchData.interestLevels.filter(level => level > 2).length; // Example: interest level > 2 means replied
+    const engagementRate = ((repliedMatches / totalMatches) * 100).toFixed(2);
+
+    document.getElementById('totalMatches').textContent = totalMatches;
+    document.getElementById('repliedMatches').textContent = repliedMatches;
+    document.getElementById('engagementRate').textContent = `${engagementRate}%`;
+}
+
+window.onload = function() {
+    initializeCharts();
+    updateEngagementMetrics();
+};
+        function addEntryFromCSV(name, initialMessage, lastInteraction, location, interestLevel, notes, photoUrl) {
+            const tableBody = document.getElementById('tableBody');
+            const row = document.createElement('tr');
+
+            const photoCell = document.createElement('td');
+            if (photoUrl) {
+                const img = document.createElement('img');
+                img.src = photoUrl;
+                img.style.width = '50px';
+                img.style.height = '50px';
+                photoCell.appendChild(img);
+            } else {
+                photoCell.textContent = 'No photo';
+            }
+            row.appendChild(photoCell);
+
+            row.innerHTML += `
+                <td>${name}</td>
+                <td>${initialMessage}</td>
+                <td>${lastInteraction}</td>
+                <td>${location}</td>
+                <td>${interestLevel}</td>
+                <td>${notes}</td>
+                <td><button onclick="deleteRow(this)">Delete</button></td>
+                <td><button onclick="addToCalendar('${name}', '${lastInteraction}', '${location}')">Add to Calendar</button></td>
+            `;
+
+            tableBody.appendChild(row);
+            updateAnalytics(); // Update analytics after adding an entry
+        }
+
+        function addToCalendar(name, date, location) {
+            console.log(`Add this event to the calendar: ${name} on ${date} at ${location}`);
+            // Here you would integrate with a calendar API
+        }
+
+        function updateAnalytics() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let lastWeekCount = 0;
+            let allTimeCount = rows.length; // All entries are considered as matches
+
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+            rows.forEach(row => {
+                const dateText = row.cells[3].textContent; // Assuming 'Last Interaction' is the fourth column
+                const date = new Date(dateText);
+                if (date >= oneWeekAgo) {
+                    lastWeekCount++;
+                }
+            });
+
+            document.getElementById('lastWeekMatches').textContent = lastWeekCount;
+            document.getElementById('allTimeMatches').textContent = allTimeCount;
+        }
+
+        function updateUnmessagedMatches() {
+            const allRows = document.querySelectorAll('#tableBody tr');
+            const unmessagedBody = document.querySelector('#unmessagedTable tbody');
+            unmessagedBody.innerHTML = ''; // Clear previous entries
+
+            allRows.forEach(row => {
+                const initialMessage = row.cells[2].textContent; // Assuming 'Initial Message' is the third column
+                if (!initialMessage.trim()) {
+                    const cloneRow = row.cloneNode(true);
+                    cloneRow.removeChild(cloneRow.lastChild); // Remove the 'Add to Calendar' button
+                    unmessagedBody.appendChild(cloneRow);
+                }
+            });
+        }
+// Sample data; replace with dynamic data as needed
+const matchData = {
+    weeklyMatches: [5, 7, 3, 10, 2, 8, 6],
+    lookingForCategories: {
+        "Short-term": 5,
+        "Long-term": 8,
+        "Friends": 4,
+        "Open to anything": 3
+    },
+    interestLevels: [1, 2, 5, 4, 3, 2, 5, 3, 4, 1, 5, 5, 2]
+};
+
+// Weekly Matches Chart
+function createWeeklyMatchesChart() {
+    const ctx = document.getElementById('weeklyMatchesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            datasets: [{
+                label: "Weekly Matches",
+                data: matchData.weeklyMatches,
+                borderColor: "#FE3C72",
+                fill: false,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// "Looking For" Categories Chart
+function createLookingForChart() {
+    const ctx = document.getElementById('lookingForChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(matchData.lookingForCategories),
+            datasets: [{
+                label: "Looking For",
+                data: Object.values(matchData.lookingForCategories),
+                backgroundColor: ["#FE3C72", "#36A2EB", "#FFCE56", "#4BC0C0"]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+}
+
+// Interest Level Distribution Chart
+function createInterestLevelChart() {
+    const ctx = document.getElementById('interestLevelChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["1", "2", "3", "4", "5"],
+            datasets: [{
+                label: "Interest Levels",
+                data: [0, 0, 0, 0, 0].map((_, i) =>
+                    matchData.interestLevels.filter(x => x === i + 1).length
+                ),
+                backgroundColor: "#FE3C72"
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Initialize all charts
+function initializeCharts() {
+    createWeeklyMatchesChart();
+    createLookingForChart();
+    createInterestLevelChart();
+}
+
+window.onload = initializeCharts;
+        function populateMatches() {
+            const matches = [
+                ["Olivia", 20, "Waitress", "Travel, Tattoos, Baseball, Movies", "Not specified", "Short-term, open to long", "Flirty and bold with a 'Heyyy sexy' message. She seems comfortable with playful banter and casual interactions.", "Respond with playful banter, maybe compliment her or ask about an interest. Suggest a coffee meetup or social outing."],
+                ["Brissa", 18, "Student", "Dogs, Wine, Socializing", "Not specified", "Long-term, open to short", "Jokes about being in a 'cult,' enjoys playful humor. You both joke about it and have a quirky back-and-forth conversation.", "Suggest a quirky date idea, like a visit to a unique café. Keep the humor going to match her energy."],
+                ["Kshama", 24, "Software Program Manager", "Coding, Socializing, Exploring New Tech", "Not specified", "Short-term, open to long", "Shared interest in coding; she’s in a 'coding slump' and you both relate over tech frustrations.", "Plan a casual coding 'study date' or a relaxed tech event meetup."],
+                ["Cc", 22, "CS Major (Student)", "Adventure, Socializing, Exploring", "Not specified", "Still figuring it out", "Friendly and excited, open to new experiences and going out. Expresses a need for getting out of the house and exploring new places.", "Propose an outing to a local spot she hasn’t been to, like a park or museum. Keep it light and adventurous."],
+                ["Annie", 20, "College Student", "Self Care, Aquarium, Coffee, Horror Movies", "Not specified", "Still figuring it out", "Direct and interested in spontaneous meetups. Playful comment about 'not being a serial killer,' with rescheduling hint of 'maybe another time.'", "Suggest a low-key casual meetup (like coffee or a movie) as she seems open to spontaneous plans."],
+                ["Sam", 18, "Student", "Not specified", "Colombian", "Still figuring it out", "Basic introduction. Responded with 'Hi' and 'Thanks' when complimented, indicating openness but minimal engagement so far.", "Send a follow-up message asking about her interests or propose a low-pressure hangout to increase engagement."],
+                ["Lizzie", 19, "Student", "Coffee, House Parties, Aquarium, Skincare", "Not specified", "Still figuring it out", "Friendly chat about local activities, skiing, and Tahoe. She expressed interest in going to Bear and doing outdoor activities.", "Suggest an outdoor activity (like skiing) or invite her to check out Tahoe together, as she seems keen on exploring these options."],
+                ["Prab", 25, "Stanford & Palo Alto University", "Meditation, Self Care, World Peace", "Not specified", "Short-term, open to long", "Lighthearted conversation, joking about her mom finding you cute, and playful tone about going on a date. Apologized for late response due to midterms.", "Suggest a specific date, as she’s shown consistent interest. A casual meetup over drinks or coffee could be a good start."]
+            ];
+
+            const tableBody = document.getElementById('tableBody');
+            matches.forEach(match => {
+                const row = document.createElement('tr');
+                match.forEach(data => {
+                    const cell = document.createElement('td');
+                    cell.textContent = data;
+                    row.appendChild(cell);
+                });
+                const actionCell = document.createElement('td');
+                actionCell.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+                row.appendChild(actionCell);
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = populateMatches; // Populate the table when the page loads
+    </script>
+</body>
+</html>
