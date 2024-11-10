@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Matches</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Existing CSS styles here */
+  </style>
+</head>
+<body>
+
+<h1>Top Matches</h1>
+<div class="top-matches-container">
+  <!-- Profile Cards here -->
+</div>
+
+<script>
+  async function addProfile(profile) {
+    // Add profile card to the page
+    const profileCard = document.createElement('div');
+    profileCard.className = 'profile-card';
+    profileCard.innerHTML = `
+      <img src="${profile.image}" alt="${profile.name}" class="profile-image">
+      <div class="overlay">
+        <div class="profile-info">
+          <div>${profile.name}, ${profile.age}</div>
+          <span>${profile.description}</span>
+          <span class="compatibility-score">Compatibility: ${profile.compatibility}/10</span>
+        </div>
+      </div>
+    `;
+    document.querySelector('.top-matches-container').appendChild(profileCard);
+
+    // Send a message using Twilio
+    try {
+      const response = await fetch('http://localhost:5000/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: '+1234567890', // Replace with actual user phone number
+          profileName: profile.name
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        console.log(`Message sent successfully: ${result.message}`);
+      } else {
+        console.error(`Failed to send message: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+
+  // Example of adding a profile and triggering a Twilio message
+  addProfile({
+    name: 'Alice',
+    age: 26,
+    image: 'https://via.placeholder.com/300x450',
+    description: 'Photographer & Adventurer',
+    compatibility: 8.5
+  });
+</script>
+
+</body>
+</html>

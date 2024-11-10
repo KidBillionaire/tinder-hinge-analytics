@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ideal Partner Description to Compatibility Equation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #1c1c1c;
+      color: #f0f0f0;
+      font-family: 'Roboto', sans-serif;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h3 {
+      color: #FE3C72;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    p {
+      text-align: center;
+      color: #bbb;
+    }
+    .input-group {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background-color: #FE3C72;
+      border: none;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    #equation {
+      font-size: 1.2em;
+      color: #FE3C72;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container my-4">
+  <h1>Describe Your Ideal Partner</h1>
+  <p>Enter a description of your ideal partner, and we'll create a compatibility equation based on your preferences.</p>
+
+  <!-- Text Input for Ideal Partner Description -->
+  <div class="input-group">
+    <textarea id="idealPartnerDescription" class="form-control" rows="4" placeholder="Describe your ideal partner... (e.g., kind, adventurous, family-oriented)"></textarea>
+    <button class="btn btn-primary mt-2" onclick="generateEquation()">Generate Equation</button>
+  </div>
+
+  <!-- Compatibility Equation Display -->
+  <h3>Compatibility Equation</h3>
+  <p id="equation">Your compatibility equation will appear here...</p>
+</div>
+
+<script>
+  async function generateEquation() {
+    const description = document.getElementById("idealPartnerDescription").value;
+
+    // Placeholder for sending data to GPT
+    // Replace with actual GPT API call if available
+    const response = await getGPTResponse(description);
+
+    // Parse the response to display the equation
+    displayEquation(response);
+  }
+
+  // Simulated GPT response handler
+  async function getGPTResponse(description) {
+    // Normally, you would use fetch() to call an API, e.g.:
+    // const response = await fetch('YOUR_BACKEND_ENDPOINT', { method: 'POST', body: JSON.stringify({ description }) });
+    // const data = await response.json();
+    
+    // For this example, we simulate a response based on input description
+    return simulateGPTResponse(description);
+  }
+
+  // Simulation of GPT response based on input (for demonstration)
+  function simulateGPTResponse(description) {
+    // This simulates how GPT might interpret common attributes and assign weights
+    const keywords = {
+      "kind": { factor: "Empathy", weight: 20 },
+      "adventurous": { factor: "Adventurousness", weight: 15 },
+      "family": { factor: "Family Values", weight: 25 },
+      "funny": { factor: "Sense of Humor", weight: 10 },
+      "smart": { factor: "Intelligence", weight: 15 },
+      "active": { factor: "Lifestyle Compatibility", weight: 15 }
+    };
+
+    const factors = [];
+    const weights = [];
+
+    for (let [key, value] of Object.entries(keywords)) {
+      if (description.toLowerCase().includes(key)) {
+        factors.push(value.factor);
+        weights.push(value.weight);
+      }
+    }
+
+    // Ensure the weights add up to 100% by normalizing if needed
+    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+    const normalizedWeights = weights.map(w => (w / totalWeight) * 100);
+
+    return factors.map((factor, index) => ({ factor, weight: normalizedWeights[index] }));
+  }
+
+  // Display the compatibility equation in real-time
+  function displayEquation(response) {
+    const equationElement = document.getElementById("equation");
+
+    if (response.length === 0) {
+      equationElement.textContent = "No clear preferences detected. Try adding more details about your ideal partner.";
+      return;
+    }
+
+    // Build equation string from GPT-like response
+    const equationParts = response.map(({ factor, weight }) => `(${factor} × ${weight.toFixed(1)}%)`);
+    equationElement.textContent = "Score = " + equationParts.join(" + ");
+  }
+</script>
+
+</body>
+</html>
