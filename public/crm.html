@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM - Dates and Conversations</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom styles -->
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        .sexy-style {
+            font-family: 'Arial', sans-serif;
+            color: #ff69b4;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header Component -->
+<header class="bg-dark text-white p-3">
+    <div class="container">
+        <h1 class="h4">CRM Application</h1>
+        <nav>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="crm.html">CRM</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard.html">Dashboard</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4 sexy-style">CRM - Your Dates and Conversations</h2>
+
+    <table id="conversationTable" class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Last Message</th>
+                <th>Avatar</th>
+                <th>Last Contacted</th>
+                <th>Invited On Date</th>
+                <th>Contact Info Provided</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Modal for adding new conversations -->
+    <button class="btn btn-primary mt-3 sexy-style" data-bs-toggle="modal" data-bs-target="#addConversationModal">Add New Conversation</button>
+    <div class="modal fade" id="addConversationModal" tabindex="-1" aria-labelledby="addConversationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content sexy-style">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addConversationModalLabel">Add New Conversation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newConversationForm">
+                        <div class="mb-3">
+                            <label for="nameInput" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="nameInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageInput" class="form-label">Last Message</label>
+                            <input type="text" class="form-control" id="messageInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="avatarInput" class="form-label">Avatar Image URL</label>
+                            <input type="url" class="form-control" id="avatarInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateInput" class="form-label">Last Contact Date</label>
+                            <input type="date" class="form-control" id="dateInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="invitedOnDateInput" class="form-label">Invited On Date</label>
+                            <input type="date" class="form-control" id="invitedOnDateInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactInfoInput" class="form-label">Contact Info Provided</label>
+                            <input type="text" class="form-control" id="contactInfoInput" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveConversationBtn">Save Conversation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap and Tailwind JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Custom Script for Managing Conversations -->
+<script>
+    // Initialize an array to store conversations
+    let conversations = [];
+
+    document.getElementById('saveConversationBtn').addEventListener('click', () => {
+        const name = document.getElementById('nameInput').value;
+        const lastMessage = document.getElementById('messageInput').value;
+        const avatar = document.getElementById('avatarInput').value;
+        const lastContactDate = document.getElementById('dateInput').value;
+        const invitedOnDate = document.getElementById('invitedOnDateInput').value;
+        const contactInfo = document.getElementById('contactInfoInput').value;
+
+        // Create a new conversation object
+        const newConversation = {
+            name: name,
+            lastMessage: lastMessage,
+            avatar: avatar,
+            lastContactDate: lastContactDate,
+            invitedOnDate: invitedOnDate,
+            contactInfo: contactInfo
+        };
+
+        // Add it to the conversations array
+        conversations.push(newConversation);
+
+        // Close the modal
+        const modal = new bootstrap.Modal(document.getElementById('addConversationModal'));
+        modal.hide();
+
+        // Clear the form
+        document.getElementById('newConversationForm').reset();
+
+        // Update the conversation list
+        displayConversations();
+    });
+
+    // Function to display conversations in a table
+    function displayConversations() {
+        const tableBody = document.getElementById('conversationTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        conversations.forEach((convo, index) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = convo.name;
+            row.insertCell(1).textContent = convo.lastMessage;
+            row.insertCell(2).innerHTML = `<img src="${convo.avatar}" class="avatar" alt="Avatar">`;
+            row.insertCell(3).textContent = `Last contacted: ${convo.lastContactDate}`;
+            row.insertCell(4).textContent = convo.invitedOnDate;
+            row.insertCell(5).textContent = convo.contactInfo;
+
+            // Create the "Add to Calendar" button
+            const actionsCell = row.insertCell(6);
+            if (convo.invitedOnDate && new Date(convo.invitedOnDate) > new Date()) {
+                const addButton = document.createElement('button');
+                addButton.className = 'btn btn-success';
+                addButton.textContent = 'Add to Calendar';
+                addButton.onclick = () => addToCalendar(convo);
+                actionsCell.appendChild(addButton);
+            }
+        });
+    }
+
+    function addToCalendar(convo) {
+        const eventTitle = `${convo.name} - CRM Conversation`;
+        const eventDate = convo.invitedOnDate;
+
+        // Create a calendar event object
+        const event = {
+            title: eventTitle,
+            start: eventDate,
+            end: eventDate // Assuming the event ends the same day it starts
+        };
+
+        // Assuming we have a calendar API or function to add events
+        addEventToCalendar(event, (success) => {
+            if (success) {
+                alert('Event added to calendar successfully!');
+            } else {
+                alert('Failed to add event to calendar.');
+            }
+        });
+    }
+
+    // Function to add events to calendar using Google Calendar API
+    function addEventToCalendar(event, callback) {
+        // Format the date for Google Calendar
+        const startDate = new Date(event.start);
+        const endDate = new Date(event.end);
+        endDate.setHours(startDate.getHours() + 1); // Set duration to 1 hour
+
+        // Create calendar event URL with parameters
+        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
+        calendarUrl.searchParams.append('action', 'TEMPLATE');
+        calendarUrl.searchParams.append('text', event.title);
+        calendarUrl.searchParams.append('dates', `${startDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`
+            + `/${endDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`);
+        calendarUrl.searchParams.append('details', 'Meeting scheduled through CRM system');
+
+        // Open Google Calendar in new window
+        const calendarWindow = window.open(calendarUrl.href, '_blank');
+        
+        if (calendarWindow) {
+            // Success - window opened
+            callback(true);
+            
+            // Check if calendar window closed
+            const timer = setInterval(() => {
+                if (calendarWindow.closed) {
+                    clearInterval(timer);
+                }
+            }, 500);
+        } else {
+            // Failed to open window (likely blocked by popup blocker)
+            callback(false);
+            alert('Please allow popups to add events to your calendar');
+        }
+    }
+</script>
+
+</body>
+</html>

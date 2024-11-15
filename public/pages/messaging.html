@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Dating Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="stylesheet" href="../styles/messaging.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <header class="d-flex justify-content-between align-items-center p-3">
+            <h1><i class="bi bi-heart-fill text-danger"></i> Messages</h1>
+            <nav>
+                <a href="../dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="profile.html" class="nav-link"><i class="bi bi-person"></i> Profile</a>
+                <a href="settings.html" class="nav-link"><i class="bi bi-gear"></i> Settings</a>
+            </nav>
+        </header>
+
+        <div class="messaging-container">
+            <div class="row">
+                <!-- Conversations List -->
+                <div class="col-md-4 conversations-list">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <i class="bi bi-chat-dots"></i> Conversations
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <!-- Sample conversations -->
+                            <a href="#" class="list-group-item list-group-item-action active" data-conversation="1">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Sarah</h6>
+                                    <small>3 mins ago</small>
+                                </div>
+                                <small>Last message: Hey, how's it going?</small>
+                            </a>
+                            <!-- Add more conversations as needed -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Window -->
+                <div class="col-md-8 chat-window">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-person-circle"></i> Sarah
+                                <small class="ms-2">Online</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-light">
+                                    <i class="bi bi-telephone"></i>
+                                </button>
+                                <button class="btn btn-sm btn-light ms-2">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body chat-messages">
+                            <!-- Messages will be dynamically added here -->
+                            <div class="message received">
+                                <div class="message-content">
+                                    Hey, how's it going?
+                                </div>
+                                <small class="message-time">3 mins ago</small>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <form id="message-form" class="d-flex">
+                                <input type="text" class="form-control me-2" placeholder="Type your message...">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/messaging.js"></script>
+</body>
+</html> 

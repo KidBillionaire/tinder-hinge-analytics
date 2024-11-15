@@ -1,0 +1,39 @@
+branch-defaults:
+  main:
+    environment: dating-assistant-prod
+    group_suffix: null
+
+global:
+  application_name: dating-assistant
+  branch: null
+  default_ec2_keyname: dating-assistant-key
+  default_platform: Node.js 18
+  default_region: us-west-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  repository: null
+  sc: git
+  workspace_type: Application
+
+deploy:
+  artifact: dist/deploy.zip
+
+environment-defaults:
+  dating-assistant-prod:
+    branch: null
+    repository: null
+
+environment:
+  staging:
+    ENVIRONMENT: staging
+    NODE_ENV: staging
+    PORT: 4000
+    HTTPS_PORT: 4443
+  production:
+    ENVIRONMENT: production
+    NODE_ENV: production
+    PORT: 80
+    HTTPS_PORT: 443 

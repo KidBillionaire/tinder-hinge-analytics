@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shahan's Dating Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <!-- Include Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    
+    <!-- Load Tesseract.js and its dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js-core@4.0.4/tesseract-core.wasm.js"></script>
+    
+    <!-- Then load your module script -->
+    <script type="module">
+        // Import from a local module that uses the global Tesseract object
+        import ProfileImageAnalyzer from './js/imageAnalysis.js';
+        
+        let analyzer = null;
+        
+        async function initializeAnalyzer() {
+            try {
+                // Wait for Tesseract to be fully loaded
+                if (typeof Tesseract === 'undefined') {
+                    throw new Error('Tesseract.js not loaded');
+                }
+                
+                analyzer = new ProfileImageAnalyzer();
+                await analyzer.initializationPromise;
+                console.log('Analyzer initialized successfully');
+                document.getElementById('uploadButton').disabled = false;
+            } catch (error) {
+                console.error('Failed to initialize analyzer:', error);
+                const errorMessage = error?.message || 'Unknown initialization error';
+                document.getElementById('uploadError').innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to initialize image analysis. Please refresh the page and try again.
+                        Error: ${errorMessage}
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize when Tesseract is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAnalyzer);
+        } else {
+            initializeAnalyzer();
+        }
+
+        // Make analyzer available globally for debugging
+        window.profileAnalyzer = analyzer;
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <header class="d-flex justify-content-between align-items-center p-3">
+        <h1><i class="bi bi-heart-fill text-danger"></i> Shahan's Dating Dashboard</h1>
+        <nav>
+            <a href="pages/messaging.html" class="nav-link"><i class="bi bi-chat-dots"></i> Messages</a>
+            <a href="index.html" class="nav-link"><i class="bi bi-people"></i> Matches</a>
+            <a href="pages/profile.html" class="nav-link"><i class="bi bi-person"></i> Profile</a>
+            <a href="pages/settings.html" class="nav-link"><i class="bi bi-gear"></i> Settings</a>
+        </nav>
+    </header>
+
+    <!-- Mission Statement -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-target"></i> Mission Statement
+                </div>
+                <div class="card-body">
+                    <h2>Get Shahan Laid (GSL)</h2>
+                    <p>Our overarching mission is to increase Shahan's chances of getting laid by:</p>
+                    <ul>
+                        <li>Optimizing his Tinder profile for maximum visibility and appeal.</li>
+                        <li>Generating effective openers tailored to his style and preferences.</li>
+                        <li>Providing real-time analytics to track progress and adjust strategies.</li>
+                        <li>Offering personalized advice and insights to improve his dating game.</li>
+                    </ul>
+                    <p>Equation for Success:</p>
+                    <p>(Optimized Profile + Effective Openers + Real-time Analytics + Personalized Advice) x (Shahan's Effort + Dedication) = GSL</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Photo Upload -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-camera"></i> Profile Photo Upload
+                </div>
+                <div class="card-body">
+                    <form id="photoUploadForm" class="dropzone-form">
+                        <div class="upload-container" id="dropZone">
+                            <i class="bi bi-cloud-upload display-4"></i>
+                            <p>Drag & drop photos here or click to select</p>
+                            <input type="file" id="photoInput" multiple accept="image/*" class="d-none">
+                        </div>
+                        <div id="previewContainer" class="mt-3 d-flex flex-wrap gap-2"></div>
+                        <div class="upload-info mt-3">
+                            <small class="text-muted">
+                                Accepted formats: JPG, PNG, WEBP (Max 5MB each)
+                            </small>
+                            <div id="uploadError" class="text-danger mt-2"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3" disabled id="uploadButton">
+                            <i class="bi bi-upload"></i> Upload Photos
+                            <span class="spinner-border spinner-border-sm d-none" id="uploadSpinner"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Sections -->
+    <section class="row mt-4">
+        <!-- Profile Overview Section -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-person-badge"></i> Profile Overview
+                </div>
+                <div class="card-body" id="profile-overview">
+                    <!-- Dynamic content generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Dates Section -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-calendar-heart"></i> Upcoming Dates
+                </div>
+                <div class="card-body" id="upcoming-dates">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Coffee Date with Sarah</h5>
+                                <small>Tomorrow, 3 PM</small>
+                            </div>
+                            <p class="mb-1">Blue Bottle Coffee Shop</p>
+                            <small><i class="bi bi-geo-alt"></i> 123 Main St</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Hiking with Emma</h5>
+                                <small>Saturday, 10 AM</small>
+                            </div>
+                            <p class="mb-1">Mount Tamalpais State Park</p>
+                            <small><i class="bi bi-geo-alt"></i> Mill Valley, CA</small>
+                        </a>
+                    </div>
+                    <button class="btn btn-success mt-3">
+                        <i class="bi bi-plus-circle"></i> Add New Date
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="row mt-4">
+        <!-- Opener Generator Section -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-chat-square-quote"></i> AI Opener Generator
+                </div>
+                <div class="card-body">
+                    <form id="openerForm">
+                        <label for="situation" class="form-label">Describe Your Match:</label>
+                        <textarea 
+                            class="form-control" 
+                            id="situation" 
+                            rows="2" 
+                            placeholder="e.g., She loves hiking and coffee, works as a yoga instructor"
+                            required></textarea>
+                        
+                        <label for="style" class="form-label mt-3">Conversation Style:</label>
+                        <select class="form-control" id="style" required>
+                            <option value="direct">Direct & Confident</option>
+                            <option value="playful">Playful & Witty</option>
+                            <option value="detail-focused">Thoughtful & Detail-Focused</option>
+                            <option value="casual">Casual & Laid-back</option>
+                        </select>
+                        
+                        <button type="submit" class="btn btn-info mt-3 text-white" id="generateBtn">
+                            <i class="bi bi-magic"></i> Generate Perfect Opener
+                            <span class="spinner-border spinner-border-sm d-none" id="loadingSpinner" role="status"></span>
+                        </button>
+                    </form>
+                    
+                    <div id="opener-result" class="mt-3 p-3 bg-light rounded">
+                        <!-- AI generated opener will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messaging Insights Section -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-graph-up"></i> Messaging Analytics
+                </div>
+                <div class="card-body" id="messaging-insights">
+                    <!-- Dynamic content generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notifications Section -->
+    <section class="row mt-4">
+        <div class="col-12">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-bell"></i> Recent Activity & Notifications
+                </div>
+                <div class="card-body" id="notifications">
+                    <!-- Dynamic content generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
+<script>
+    // Initialize after DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const { default: ProfileImageAnalyzer } = await import('./js/imageAnalysis.js');
+            window.profileAnalyzer = new ProfileImageAnalyzer();
+            await window.profileAnalyzer.initTesseract();
+            console.log('Analyzer initialized successfully');
+            document.getElementById('uploadButton').disabled = false;
+        } catch (error) {
+            console.error('Failed to initialize analyzer:', error);
+            document.getElementById('uploadError').innerHTML = `
+                <div class="alert alert-danger">
+                    Failed to initialize image analysis. Please refresh the page and try again.
+                    Error: ${error.message}
+                </div>
+            `;
+        }
+    });
+
+    // File handling functions
+    function handleFiles(files) {
+        uploadError.textContent = '';
+        const validFiles = Array.from(files).filter(file => {
+            if (!ACCEPTED_TYPES.includes(file.type)) {
+                uploadError.textContent = 'Invalid file type. Please upload only JPG, PNG, or WEBP images.';
+                return false;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                uploadError.textContent = 'File too large. Maximum size is 5MB.';
+                return false;
+            }
+            return true;
+        });
+
+        selectedFiles = [...selectedFiles, ...validFiles];
+        updatePreview();
+        uploadButton.disabled = selectedFiles.length === 0;
+    }
+
+    function updatePreview() {
+        previewContainer.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                previewItem.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                    <button type="button" class="remove-btn" data-index="${index}">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+                previewContainer.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Event listeners for file handling
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    });
+
+    photoInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    // Remove button click handler
+    previewContainer.addEventListener('click', (e) => {
+        if (e.target.closest('.remove-btn')) {
+            const index = parseInt(e.target.closest('.remove-btn').dataset.index);
+            selectedFiles = selectedFiles.filter((_, i) => i !== index);
+            updatePreview();
+            uploadButton.disabled = selectedFiles.length === 0;
+        }
+    });
+
+    // Form submission handler
+    document.getElementById('photoUploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadError = document.getElementById('uploadError');
+        const uploadSpinner = document.getElementById('uploadSpinner');
+        const resultDiv = document.getElementById('result');
+        
+        uploadButton.disabled = true;
+        uploadSpinner.classList.remove('d-none');
+        uploadError.innerHTML = '';
+        resultDiv.innerHTML = '<div class="alert alert-info">Processing image...</div>';
+
+        try {
+            const fileInput = document.getElementById('photoInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                throw new Error('No file selected');
+            }
+
+            const analysis = await window.profileAnalyzer.analyzeImage(file);
+            console.log('Analysis results:', analysis);
+
+            // Display results in a more readable format
+            resultDiv.innerHTML = `
+                <div class="alert alert-success">
+                    <h4>Analysis Results:</h4>
+                    <div class="profile-info">
+                        ${analysis.profile ? `
+                            <h5>Profile Information:</h5>
+                            <ul>
+                                ${analysis.profile.name ? `<li>Name: ${analysis.profile.name}</li>` : ''}
+                                ${analysis.profile.age ? `<li>Age: ${analysis.profile.age}</li>` : ''}
+                                ${analysis.profile.location ? `<li>Location: ${analysis.profile.location}</li>` : ''}
+                                ${analysis.profile.distance ? `<li>Distance: ${analysis.profile.distance} miles</li>` : ''}
+                                ${analysis.profile.anthem ? `<li>Anthem: ${analysis.profile.anthem}</li>` : ''}
+                                ${analysis.profile.lifestyle ? `<li>Lifestyle: ${analysis.profile.lifestyle}</li>` : ''}
+                            </ul>
+                        ` : ''}
+                    </div>
+                    <div class="text-analysis">
+                        <h5>Text Analysis:</h5>
+                        <ul>
+                            <li>Word Count: ${analysis.wordCount}</li>
+                            <li>Contains URLs: ${analysis.containsUrls}</li>
+                            <li>Contains Email: ${analysis.containsEmail}</li>
+                            <li>Contains Phone Number: ${analysis.containsPhoneNumber}</li>
+                        </ul>
+                    </div>
+                    <details>
+                        <summary>Raw Text</summary>
+                        <pre class="mt-2">${analysis.raw}</pre>
+                    </details>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error during OCR or text parsing:', error);
+            uploadError.innerHTML = `
+                <div class="alert alert-danger">
+                    Error during OCR or text parsing: ${error.message}
+                </div>
+            `;
+            resultDiv.innerHTML = '';
+        } finally {
+            uploadButton.disabled = false;
+            uploadSpinner.classList.add('d-none');
+        }
+    });
+
+    function displayPartialSuccess(successCount, failureCount) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-warning mt-3';
+        alert.innerHTML = `
+            <strong>Partial Success:</strong> Successfully analyzed ${successCount} image(s), 
+            but failed to analyze ${failureCount} image(s). Check the errors below for details.
+        `;
+        document.getElementById('uploadError').appendChild(alert);
+    }
+
+    function displayAnalysisResults(results) {
+        // Redirect to results page with the analysis data
+        localStorage.setItem('analysisResults', JSON.stringify(results));
+        window.location.href = 'results.html';
+    }
+
+    // Add error boundary
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        document.getElementById('uploadError').innerHTML = `
+            <div class="alert alert-danger">
+                An unexpected error occurred. Please refresh the page and try again.
+                Error: ${event.reason?.message || 'Unknown error'}
+            </div>
+        `;
+    });
+</script>
+
+<div class="ocr-test-container">
+  <input type="file" id="imageInput" accept="image/*">
+  <div id="result"></div>
+</div>
+
+<!-- Add this after your form -->
+<div id="ocrProgress" class="mt-3"></div>
+<div id="result" class="mt-3"></div>
+</body>
+</html>

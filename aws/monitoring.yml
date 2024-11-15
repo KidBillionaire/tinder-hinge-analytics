@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Dating Assistant Monitoring Infrastructure'
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues: [development, staging, production]
+    Default: production
+
+Resources:
+  # SNS Topics for different alert severities
+  CriticalAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Dating-Assistant-${Environment}-Critical
+      TopicName: !Sub dating-assistant-${Environment}-critical
+
+  WarningAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Dating-Assistant-${Environment}-Warning
+      TopicName: !Sub dating-assistant-${Environment}-warning
+
+  # CloudWatch Alarms
+  HighErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${Environment}-HighErrorRate
+      AlarmDescription: Alert when error rate exceeds threshold
+      MetricName: ErrorRate
+      Namespace: !Sub DatingAssistant-${Environment}
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions: 
+        - !Ref CriticalAlertTopic
+
+  HighLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${Environment}-HighLatency
+      AlarmDescription: Alert when average latency exceeds threshold
+      MetricName: AverageLatency
+      Namespace: !Sub DatingAssistant-${Environment}
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1000
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref WarningAlertTopic
+
+  MLServiceHealthAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${Environment}-MLServiceHealth
+      AlarmDescription: Alert when ML service is unhealthy
+      MetricName: MLServiceHealth
+      Namespace: !Sub DatingAssistant-${Environment}-ML
+      Statistic: Minimum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      AlarmActions:
+        - !Ref CriticalAlertTopic
+
+  APIHealthDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub dating-assistant-${Environment}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["DatingAssistant-${Environment}", "RequestCount"]
+                ],
+                "period": 300,
+                "stat": "Sum",
+                "region": "${AWS::Region}",
+                "title": "Request Count"
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["DatingAssistant-${Environment}", "ErrorRate"]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Error Rate"
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["DatingAssistant-${Environment}", "AverageLatency"]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Average Latency"
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  ["DatingAssistant-${Environment}-ML", "MLServiceHealth"]
+                ],
+                "period": 300,
+                "stat": "Minimum",
+                "region": "${AWS::Region}",
+                "title": "ML Service Health"
+              }
+            }
+          ]
+        }
+
+Outputs:
+  CriticalTopicArn:
+    Description: ARN of the Critical Alert SNS Topic
+    Value: !Ref CriticalAlertTopic
+
+  WarningTopicArn:
+    Description: ARN of the Warning Alert SNS Topic
+    Value: !Ref WarningAlertTopic
+
+  DashboardURL:
+    Description: URL of the CloudWatch Dashboard
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=${APIHealthDashboard} 

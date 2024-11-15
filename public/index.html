@@ -26,6 +26,10 @@
           <th>Additional Info</th>
           <th>Conversation Summary</th>
           <th>Next Steps</th>
+          <th>Bio</th>
+          <th>LinkedIn or Website</th>
+          <th>Location</th>
+          <th>College</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -67,26 +71,23 @@
         const responseData = data;
 
         if (responseData.choices && responseData.choices.length > 0) {
-            let content;
-            try {
-                content = responseData.choices[0].message.content;
+            let content = responseData.choices[0].message.content;
 
-                // Remove Markdown formatting if present
-                content = content.replace(/```json\s*|\s*```/g, '').trim();
+            // Remove Markdown formatting (triple backticks and any leading/trailing whitespace)
+            content = content.replace(/```json\s*|\s*```/g, '').trim();
 
-                // Check if content is valid JSON
-                if (content) {
-                    // Attempt to parse the JSON
-                    const data = JSON.parse(content);
-                    console.log("Parsed data:", data);
-                    addDataToTable(data); // Call your function to display the data
-                } else {
-                    throw new Error("Content is empty or undefined.");
+            // Check if content is valid JSON
+            if (content) {
+                try {
+                    const parsedData = JSON.parse(content);
+                    console.log("Parsed data:", parsedData);
+                    addDataToTable(parsedData); // Call your function to display the data
+                } catch (error) {
+                    console.error("Error parsing JSON from GPT response:", error);
+                    alert("Received invalid JSON format. Check the console for details.");
                 }
-            } catch (error) {
-                console.error("Error parsing JSON from GPT response:", error);
-                console.error("Received content:", content);
-                alert("Received invalid JSON format. Check the console for details.");
+            } else {
+                alert("Received empty content from the API.");
             }
         } else {
             alert("No valid choices received from the API.");
@@ -100,7 +101,7 @@
         document.getElementById('parseImageBtn').innerText = 'Parse Image and Extract Data';
       }
     });
-
+    localStorage.setItem('data', JSON.stringify({ Name: 'John Doe', Age: 30 }));
     function parseContentToObject(content) {
       const data = {};
       let currentSection = null;

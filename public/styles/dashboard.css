@@ -1,0 +1,103 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f3f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+/* Header Styles */
+header {
+    background-color: #343a40;
+    color: #fff;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header nav a {
+    color: #ffffff;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+header nav a:hover {
+    color: #ffc107;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Card Header */
+.card-header {
+    font-weight: 700;
+    font-size: 1.3em;
+    color: #495057;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    padding: 0.5em 1em;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Opener Result Text */
+#opener-result p {
+    font-style: italic;
+    font-size: 1.1em;
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+#opener-result p:hover {
+    color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Button Styling */
+button {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Add subtle hover effects for interactive elements */
+a, button {
+    transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+a:hover, button:hover {
+    text-decoration: none;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer Styling */
+footer {
+    background-color: #343a40;
+    color: #ccc;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.9em;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 2rem;
+}

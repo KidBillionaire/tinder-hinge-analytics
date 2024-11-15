@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Dating Assistant Application Infrastructure'
+
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - staging
+      - production
+    Default: staging
+
+  DomainName:
+    Type: String
+    Default: yourdomain.com
+
+Conditions:
+  IsProduction: !Equals [ !Ref Environment, 'production' ]
+
+Resources:
+  ElasticBeanstalkApplication:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      ApplicationName: !Sub dating-assistant-${Environment}
+      Description: Dating Assistant Application
+
+  ElasticBeanstalkEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName: !Ref ElasticBeanstalkApplication
+      EnvironmentName: !Sub dating-assistant-${Environment}
+      SolutionStackName: "64bit Amazon Linux 2 v5.6.1 running Node.js 18"
+      OptionSettings:
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: InstanceType
+          Value: !If [IsProduction, 't3.small', 't3.micro']
+        
+        - Namespace: aws:autoscaling:asg
+          OptionName: MinSize
+          Value: !If [IsProduction, '2', '1']
+        
+        - Namespace: aws:autoscaling:asg
+          OptionName: MaxSize
+          Value: !If [IsProduction, '4', '2']
+        
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: EnvironmentType
+          Value: LoadBalanced
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultCacheBehavior:
+          TargetOriginId: ElasticBeanstalkEnvironment
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            - PUT
+            - POST
+            - PATCH
+            - DELETE
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: all
+          DefaultTTL: 0
+          MaxTTL: 0
+          MinTTL: 0
+        Origins:
+          - DomainName: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
+            Id: ElasticBeanstalkEnvironment
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !If 
+        - IsProduction
+        - !Sub "api.${DomainName}"
+        - !Sub "staging-api.${DomainName}"
+      ValidationMethod: DNS
+
+Outputs:
+  ApiEndpoint:
+    Description: API Endpoint URL
+    Value: !GetAtt ElasticBeanstalkEnvironment.EndpointURL
+
+  CloudFrontDomain:
+    Description: CloudFront Distribution Domain
+    Value: !GetAtt CloudFrontDistribution.DomainName 

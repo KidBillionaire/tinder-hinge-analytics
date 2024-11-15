@@ -1,0 +1,78 @@
+.dropzone-form {
+    text-align: center;
+}
+
+.upload-container {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-container:hover {
+    border-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.upload-container.dragover {
+    border-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+#previewContainer img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+}
+
+.preview-item {
+    position: relative;
+    display: inline-block;
+}
+
+.preview-item .remove-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.analysis-results {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.analysis-results .card {
+    background-color: #f8f9fa;
+}
+
+.analysis-results .card-header {
+    background-color: #e9ecef;
+    font-weight: bold;
+}
+
+.analysis-results ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.analysis-results li {
+    margin-bottom: 0.5rem;
+}
+
+.analysis-results h5 {
+    margin-top: 1rem;
+    color: #0d6efd;
+} 

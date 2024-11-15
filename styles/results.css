@@ -1,0 +1,145 @@
+.results-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.confidence-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.confidence-high {
+    background-color: #28a745;
+}
+
+.confidence-medium {
+    background-color: #ffc107;
+}
+
+.confidence-low {
+    background-color: #dc3545;
+}
+
+.opener-card {
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.opener-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.opener-metadata {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.copy-button {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.opener-card:hover .copy-button {
+    opacity: 1;
+}
+
+.analysis-section {
+    margin-bottom: 1.5rem;
+}
+
+.analysis-section h6 {
+    color: #0d6efd;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    background-color: #e9ecef;
+}
+
+.tag-confidence {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.visual-element {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sentiment-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+}
+
+.sentiment-indicator i {
+    margin-right: 0.25rem;
+}
+
+.interest-input {
+    flex-grow: 1;
+}
+
+.remove-interest, .remove-visual {
+    flex-shrink: 0;
+}
+
+.visual-element input:first-child {
+    width: 30%;
+    margin-right: 5px;
+}
+
+.visual-element input:nth-child(2) {
+    width: 70%;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.analysis-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.analysis-section h6 {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+}
+
+.alert {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+} 
